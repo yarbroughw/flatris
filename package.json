@@ -1,20 +1,26 @@
 {
-    "name": "tetris",
-    "version": "0.0.0",
-    "description": "",
-    "main": "tetris.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Willem Yarbrough",
-    "license": "BSD-2-Clause",
-    "dependencies": {
-        "redux": "~3.5.2"
-    },
-    "devDependencies": {
-        "webpack": "~1.13.0"
-    },
-    "jshintConfig": {
-        "esversion": 6
-    }
+  "name": "flatris",
+  "version": "0.0.0",
+  "description": "Simple flatris game with Redux and HTML5 Canvas.",
+  "main": "flatris.js",
+  "dependencies": {
+    "redux": "~3.5.2",
+    "webpack": "~1.13.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yarbroughw/flatris.git"
+  },
+  "keywords": [
+    "tetris"
+  ],
+  "author": "Willem Yarbrough",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yarbroughw/flatris/issues"
+  }
 }
