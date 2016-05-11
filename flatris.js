@@ -22,6 +22,8 @@ const COLORS = {
     YELLOW:    "#f1c40f",
 };
 
+const POINT_VALUES = [0, 40, 100, 300, 1200];
+
 function Space(x, y, color = COLORS.BLUE) {
     return {
         x: x,
@@ -127,7 +129,8 @@ function makeInitialState() {
     return {
         board: [],
         current: randomPiece(),
-        next: randomPiece()
+        next: randomPiece(),
+        score: 0
     };
 }
 
@@ -176,14 +179,22 @@ function clearRows(board) {
     }
     let notInRow = row => space => space.y != row;
     let bumpSpaceDown = row => space => space.y < row ? new Space(space.x, space.y + 1, space.color) : space;
+
+    let rowscleared = 0;
     for (let row in rowcounts) {
         if (rowcounts[row] >= GRID.WIDTH) {
             board = board.filter(notInRow(row));
             board = board.map(bumpSpaceDown(row));
+            rowscleared += 1;
         }
     }
 
-    return board;
+    let points = rowscleared <= 4 ? POINT_VALUES[rowscleared] : POINT_VALUES[4];
+
+    return {
+        board: board,
+        points: points
+    };
 }
 
 function validRotation(piece, board) {
@@ -207,8 +218,11 @@ function mainState(state = makeInitialState(), action) {
             let newCurrent = new Piece(current.shape, current.orientation, current.layout, current.color, current.x, current.y + 1);
             if (colliding(newCurrent, state.board)) {
                 let newboard = state.current.spaces.concat(state.board);
-                newboard = clearRows(newboard);
-                return Object.assign({}, state, {current: state.next, next: randomPiece(), board: newboard});
+                let result = clearRows(newboard);
+                let newscore = state.score + result.points;
+                return Object.assign({}, state,
+                     {current: state.next, next: randomPiece(), board: result.board, score: newscore}
+                );
             }
             return Object.assign({}, state, {current: newCurrent});
         case 'MOVE_RIGHT':
@@ -238,6 +252,7 @@ let canvas = document.getElementById("myCanvas");
 canvas.width = GRID.DIMENSION * GRID.WIDTH;
 canvas.height = GRID.DIMENSION * GRID.HEIGHT;
 let ctx = canvas.getContext("2d");
+ctx.font = "30px Arial";
 
 document.addEventListener("keydown", keyDownHandler, false);
 
@@ -267,9 +282,16 @@ function drawSpace(context, space) {
 function drawPiece(context, shape) {
      let spaces = shape.spaces.map(space => drawSpace(context, space));
 }
+
+function drawScore(context, score) {
+    context.fillStyle = "#777";
+    context.fillText(score, 10, 30);
+}
+
 function drawState(context, state) {
     state.board.map(space => drawSpace(context, space));
     drawPiece(context, state.current);
+    drawScore(context, state.score);
 }
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
