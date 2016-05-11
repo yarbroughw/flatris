@@ -22,5 +22,8 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/yarbroughw/flatris/issues"
+  },
+  "jshintConfig": {
+    "esversion": 6
   }
 }
