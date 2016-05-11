@@ -137,10 +137,11 @@ function inXBounds(piece, gridwidth) {
 }
 
 function colliding(piece, board) {
+    let colliding = space => boardsquare => boardsquare.x == space.x && boardsquare.y == space.y;
     for (let i in piece.spaces) {
         let space = piece.spaces[i];
         // check for square collision
-        let collision = board.find(boardsquare => boardsquare.x == space.x && boardsquare.y == space.y);
+        let collision = board.find(colliding(space));
         if (collision) return true;
         // check for floor collision
         if (space.y >= GRID.HEIGHT) return true;
@@ -173,11 +174,12 @@ function clearRows(board) {
         let space = board[i];
         rowcounts[space.y] = rowcounts[space.y] + 1 || 1;
     }
-
+    let notInRow = row => space => space.y != row;
+    let bumpSpaceDown = row => space => space.y < row ? new Space(space.x, space.y + 1, space.color) : space;
     for (let row in rowcounts) {
         if (rowcounts[row] >= GRID.WIDTH) {
-            board = board.filter(space => space.y != row);
-            board = board.map(space => space.y < row ? new Space(space.x, space.y + 1, space.color) : space);
+            board = board.filter(notInRow(row));
+            board = board.map(bumpSpaceDown(row));
         }
     }
 
