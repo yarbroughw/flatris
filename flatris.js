@@ -155,9 +155,13 @@ function randomPiece() {
     return new Piece(keys[idx], 0, shape.orientations[0], shape.color, 3, 0);
 }
 
+function validPiece(piece, board) {
+    return inXBounds(piece, GRID.WIDTH) && !colliding(piece, board);
+}
+
 function shiftPiece(piece, board, dx, dy) {
-    let newPiece = new Piece(piece.shape, piece.orientation, piece.layout, piece.color, piece.x + dx, piece.y + dy);
-    if (!inXBounds(newPiece, GRID.WIDTH) || colliding(newPiece, board)) {
+    let newPiece = piece.shifted(dx, dy);
+    if (!validPiece(newPiece, board)) {
         return piece;
     }
     return newPiece;
@@ -178,6 +182,20 @@ function clearRows(board) {
     }
 
     return board;
+}
+
+function validRotation(piece, board) {
+    let rotated = piece.rotated();
+    if (!validPiece(rotated, board)) {
+        rotated = rotated.shifted(1, 0);
+        if (!validPiece(rotated, board)) {
+            rotated = rotated.shifted(-2, 0);
+            if (!validPiece(rotated, board)) {
+                rotated = state.current;
+            }
+        }
+    }
+    return rotated;
 }
 
 function mainState(state = makeInitialState(), action) {
@@ -205,7 +223,7 @@ function mainState(state = makeInitialState(), action) {
             });
         case 'ROTATE':
             return Object.assign({}, state, {
-                current: state.current.rotated()
+                current: validRotation(state.current, state.board)
             });
         default:
             return state;
