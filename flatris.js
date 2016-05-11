@@ -51,8 +51,8 @@ class Piece {
     }
 
     rotated(dx, dy) {
-        var newOrientation = (this.orientation + 1) % 4;
-        var newLayout = SHAPES[this.shape].orientations[newOrientation];
+        let newOrientation = (this.orientation + 1) % 4;
+        let newLayout = SHAPES[this.shape].orientations[newOrientation];
         return new Piece(this.shape, newOrientation, newLayout, this.color, this.x, this.y);
     }
 }
@@ -132,15 +132,15 @@ function makeInitialState() {
 }
 
 function inXBounds(piece, gridwidth) {
-    var bools = piece.spaces.map(square => 0 <= square.x && square.x < gridwidth);
+    let bools = piece.spaces.map(square => 0 <= square.x && square.x < gridwidth);
     return bools.indexOf(false) == -1;
 }
 
 function colliding(piece, board) {
-    for (var i in piece.spaces) {
-        var space = piece.spaces[i];
+    for (let i in piece.spaces) {
+        let space = piece.spaces[i];
         // check for square collision
-        var collision = board.find(boardsquare => boardsquare.x == space.x && boardsquare.y == space.y);
+        let collision = board.find(boardsquare => boardsquare.x == space.x && boardsquare.y == space.y);
         if (collision) return true;
         // check for floor collision
         if (space.y >= GRID.HEIGHT) return true;
@@ -149,14 +149,14 @@ function colliding(piece, board) {
 }
 
 function randomPiece() {
-    var keys = Object.keys(SHAPES);
-    var idx = Math.floor(Math.random() * keys.length);
-    var shape = SHAPES[keys[idx]];
+    let keys = Object.keys(SHAPES);
+    let idx = Math.floor(Math.random() * keys.length);
+    let shape = SHAPES[keys[idx]];
     return new Piece(keys[idx], 0, shape.orientations[0], shape.color, 3, 0);
 }
 
 function shiftPiece(piece, board, dx, dy) {
-    var newPiece = new Piece(piece.shape, piece.orientation, piece.layout, piece.color, piece.x + dx, piece.y + dy);
+    let newPiece = new Piece(piece.shape, piece.orientation, piece.layout, piece.color, piece.x + dx, piece.y + dy);
     if (!inXBounds(newPiece, GRID.WIDTH) || colliding(newPiece, board)) {
         return piece;
     }
@@ -164,13 +164,13 @@ function shiftPiece(piece, board, dx, dy) {
 }
 
 function clearRows(board) {
-    var rowcounts = {};
-    for (var i in board) {
-        var space = board[i];
+    let rowcounts = {};
+    for (let i in board) {
+        let space = board[i];
         rowcounts[space.y] = rowcounts[space.y] + 1 || 1;
     }
 
-    for (var row in rowcounts) {
+    for (let row in rowcounts) {
         if (rowcounts[row] >= GRID.WIDTH) {
             board = board.filter(space => space.y != row);
             board = board.map(space => space.y < row ? new Space(space.x, space.y + 1, space.color) : space);
@@ -183,10 +183,10 @@ function clearRows(board) {
 function mainState(state = makeInitialState(), action) {
     switch (action.type) {
         case 'TICK':
-            var current = state.current;
-            var newCurrent = new Piece(current.shape, current.orientation, current.layout, current.color, current.x, current.y + 1);
+            let current = state.current;
+            let newCurrent = new Piece(current.shape, current.orientation, current.layout, current.color, current.x, current.y + 1);
             if (colliding(newCurrent, state.board)) {
-                var newboard = state.current.spaces.concat(state.board);
+                let newboard = state.current.spaces.concat(state.board);
                 newboard = clearRows(newboard);
                 return Object.assign({}, state, {current: state.next, next: randomPiece(), board: newboard});
             }
@@ -212,14 +212,12 @@ function mainState(state = makeInitialState(), action) {
     }
 }
 
-var store = Redux.createStore(mainState);
+let store = Redux.createStore(mainState);
 
-var canvas = document.getElementById("myCanvas");
+let canvas = document.getElementById("myCanvas");
 canvas.width = GRID.DIMENSION * GRID.WIDTH;
 canvas.height = GRID.DIMENSION * GRID.HEIGHT;
-
-var ctx = canvas.getContext("2d");
-var pressed = false;
+let ctx = canvas.getContext("2d");
 
 document.addEventListener("keydown", keyDownHandler, false);
 
@@ -239,7 +237,7 @@ function keyDownHandler(event) {
 }
 
 function drawSpace(context, space) {
-    var dim = GRID.DIMENSION;
+    let dim = GRID.DIMENSION;
     context.beginPath();
     context.rect(space.x*dim, space.y*dim, dim, dim);
     context.fillStyle = space.color;
@@ -247,7 +245,7 @@ function drawSpace(context, space) {
     context.closePath();
 }
 function drawPiece(context, shape) {
-     var spaces = shape.spaces.map(space => drawSpace(context, space));
+     let spaces = shape.spaces.map(space => drawSpace(context, space));
 }
 function drawState(context, state) {
     state.board.map(space => drawSpace(context, space));
