@@ -127,6 +127,8 @@ const SHAPES = {
 
 function makeInitialState() {
     return {
+        started: false,
+        gameOver: false,
         board: [],
         current: randomPiece(),
         next: randomPiece(),
@@ -213,31 +215,42 @@ function validRotation(piece, board) {
 
 function mainState(state = makeInitialState(), action) {
     switch (action.type) {
+        case 'NEW_GAME':
+            return Object.assign({}, state, {started: true, gameOver: false});
         case 'TICK':
-            let current = state.current;
-            let newCurrent = new Piece(current.shape, current.orientation, current.layout, current.color, current.x, current.y + 1);
-            if (colliding(newCurrent, state.board)) {
-                let newboard = state.current.spaces.concat(state.board);
-                let result = clearRows(newboard);
-                let newscore = state.score + result.points;
+            if (state.gameOver || !state.started) return state;
+
+            let shifted_down = state.current.shifted(0, 1);
+            if (colliding(shifted_down, state.board)) {
+                let {board: new_board, points: points_awarded} = clearRows(state.current.spaces.concat(state.board));
                 return Object.assign({}, state,
-                     {current: state.next, next: randomPiece(), board: result.board, score: newscore}
+                     {
+                         current: state.next,
+                         next: randomPiece(),
+                         board: new_board,
+                         score: state.score + points_awarded,
+                         gameOver: colliding(state.next, state.board)
+                     }
                 );
             }
-            return Object.assign({}, state, {current: newCurrent});
+            return Object.assign({}, state, {current: shifted_down});
         case 'MOVE_RIGHT':
+            if (state.gameOver || !state.started) return state;
             return Object.assign({}, state, {
                 current: shiftPiece(state.current, state.board, 1, 0)
             });
         case 'MOVE_LEFT':
+            if (state.gameOver || !state.started) return state;
             return Object.assign({}, state, {
                 current: shiftPiece(state.current, state.board, -1, 0)
             });
         case 'MOVE_DOWN':
+            if (state.gameOver || !state.started) return state;
             return Object.assign({}, state, {
                 current: shiftPiece(state.current, state.board, 0, 1)
             });
         case 'ROTATE':
+            if (state.gameOver || !state.started) return state;
             return Object.assign({}, state, {
                 current: validRotation(state.current, state.board)
             });
@@ -268,6 +281,9 @@ function keyDownHandler(event) {
     }
     else if (event.keyCode == 38) {
         store.dispatch({type: 'ROTATE'});
+    }
+    else if (event.keyCode == 32) {
+        store.dispatch({type: 'NEW_GAME'});
     }
 }
 
