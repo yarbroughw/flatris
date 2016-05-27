@@ -206,7 +206,7 @@ function validRotation(piece, board) {
         if (!validPiece(rotated, board)) {
             rotated = rotated.shifted(-2, 0);
             if (!validPiece(rotated, board)) {
-                rotated = state.current;
+                rotated = piece;
             }
         }
     }
@@ -265,7 +265,6 @@ let canvas = document.getElementById("myCanvas");
 canvas.width = GRID.DIMENSION * GRID.WIDTH;
 canvas.height = GRID.DIMENSION * GRID.HEIGHT;
 let ctx = canvas.getContext("2d");
-ctx.font = "30px Arial";
 
 document.addEventListener("keydown", keyDownHandler, false);
 
@@ -299,15 +298,37 @@ function drawPiece(context, shape) {
      let spaces = shape.spaces.map(space => drawSpace(context, space));
 }
 
-function drawScore(context, score) {
+function drawRunningScore(context, score) {
+    ctx.font = "30px Arial";
     context.fillStyle = "#777";
     context.fillText(score, 10, 30);
+}
+
+function drawStartMessage(context, score) {
+    ctx.font = "20px Arial";
+    context.fillStyle = "#777";
+    context.fillText("Press Space to Start", 60, 275);
+}
+
+function drawGameOver(context, score) {
+    ctx.font = "30px Arial";
+    context.fillStyle = "#777";
+    context.fillText("GAME OVER", 60, 275);
 }
 
 function drawState(context, state) {
     state.board.map(space => drawSpace(context, space));
     drawPiece(context, state.current);
-    drawScore(context, state.score);
+
+    if (!state.started) {
+        drawStartMessage(context, state);
+    }
+    else if (state.gameOver) {
+        drawGameOver(context, state);
+    }
+    else {
+        drawRunningScore(context, state.score);
+    }
 }
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
