@@ -1,5 +1,5 @@
 module.exports = {
-    entry: __dirname + '/flatris.js',
+    entry: __dirname + '/src/flatris.js',
     output: {
         path: __dirname + '/build',
         filename: 'bundle.js'

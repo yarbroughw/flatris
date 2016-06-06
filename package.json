@@ -2,7 +2,7 @@
   "name": "flatris",
   "version": "0.0.0",
   "description": "Simple flatris game with Redux and HTML5 Canvas.",
-  "main": "./flatris.js",
+  "main": "./src/flatris.js",
   "dependencies": {
     "redux": "~3.5.2"
   },

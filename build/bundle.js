@@ -147,7 +147,8 @@
 	        color: COLORS.TURQUOISE
 	    },
 	    I: {
-	        orientations: [[Space(0, 0), Space(1, 0), Space(2, 0), Space(3, 0)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(1, 3)], [Space(0, 0), Space(1, 0), Space(2, 0), Space(3, 0)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(1, 3)]]
+	        orientations: [[Space(0, 0), Space(1, 0), Space(2, 0), Space(3, 0)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(1, 3)], [Space(0, 0), Space(1, 0), Space(2, 0), Space(3, 0)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(1, 3)]],
+	        color: COLORS.BLUE
 	    }
 	};
 
@@ -288,11 +289,6 @@
 	            if (state.gameOver || !state.started) return state;
 	            return Object.assign({}, state, {
 	                current: shiftPiece(state.current, state.board, 1, 0)
-	            });
-	        case 'MOVE_LEFT':
-	            if (state.gameOver || !state.started) return state;
-	            return Object.assign({}, state, {
-	                current: shiftPiece(state.current, state.board, -1, 0)
 	            });
 	        case 'MOVE_LEFT':
 	            if (state.gameOver || !state.started) return state;
