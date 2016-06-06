@@ -1,10 +1,4 @@
-/*
- * TODO: colors
- * TODO: rotation
- * TODO: line clearing
- * TODO: end state
- *
- */
+import { createStore } from 'redux';
 
 const GRID = {
     DIMENSION: 30,
@@ -266,7 +260,7 @@ function mainState(state = makeInitialState(), action) {
     }
 }
 
-let store = Redux.createStore(mainState);
+let store = createStore(mainState);
 
 let canvas = document.getElementById("myCanvas");
 canvas.width = GRID.DIMENSION * GRID.WIDTH;
