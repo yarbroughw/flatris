@@ -44,34 +44,20 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _redux = __webpack_require__(1);
 
+	var _draw = __webpack_require__(15);
+
+	var _globals = __webpack_require__(16);
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var GRID = {
-	    DIMENSION: 30,
-	    WIDTH: 10,
-	    HEIGHT: 20
-	};
-
-	var COLORS = {
-	    RED: "#e74c3c",
-	    ORANGE: "#e67e22",
-	    GREEN: "#2ecc71",
-	    BLUE: "#3498db",
-	    PURPLE: "#9b59b6",
-	    TURQUOISE: "#1abc9c",
-	    YELLOW: "#f1c40f"
-	};
-
-	var POINT_VALUES = [0, 40, 100, 300, 1200];
-
 	function Space(x, y) {
-	    var color = arguments.length <= 2 || arguments[2] === undefined ? COLORS.BLUE : arguments[2];
+	    var color = arguments.length <= 2 || arguments[2] === undefined ? _globals.COLORS.BLUE : arguments[2];
 
 	    return {
 	        x: x,
@@ -79,6 +65,37 @@
 	        color: color
 	    };
 	}
+
+	var SHAPES = {
+	    O: {
+	        orientations: [[Space(0, 0), Space(0, 1), Space(1, 0), Space(1, 1)], [Space(0, 0), Space(0, 1), Space(1, 0), Space(1, 1)], [Space(0, 0), Space(0, 1), Space(1, 0), Space(1, 1)], [Space(0, 0), Space(0, 1), Space(1, 0), Space(1, 1)]],
+	        color: _globals.COLORS.RED
+	    },
+	    J: {
+	        orientations: [[Space(0, 0), Space(1, 0), Space(2, 0), Space(2, 1)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(0, 2)], [Space(0, 0), Space(0, 1), Space(1, 1), Space(2, 1)], [Space(0, 0), Space(1, 0), Space(0, 1), Space(0, 2)]],
+	        color: _globals.COLORS.ORANGE
+	    },
+	    L: {
+	        orientations: [[Space(0, 0), Space(1, 0), Space(2, 0), Space(0, 1)], [Space(0, 0), Space(1, 0), Space(1, 1), Space(1, 2)], [Space(2, 0), Space(0, 1), Space(1, 1), Space(2, 1)], [Space(0, 0), Space(0, 1), Space(0, 2), Space(1, 2)]],
+	        color: _globals.COLORS.GREEN
+	    },
+	    T: {
+	        orientations: [[Space(0, 0), Space(0, 1), Space(0, 2), Space(1, 1)], [Space(0, 0), Space(1, 0), Space(2, 0), Space(1, 1)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(0, 1)], [Space(1, 0), Space(0, 1), Space(1, 1), Space(2, 1)]],
+	        color: _globals.COLORS.YELLOW
+	    },
+	    Z: {
+	        orientations: [[Space(0, 0), Space(1, 0), Space(1, 1), Space(2, 1)], [Space(1, 0), Space(0, 1), Space(1, 1), Space(0, 2)], [Space(0, 0), Space(1, 0), Space(1, 1), Space(2, 1)], [Space(1, 0), Space(0, 1), Space(1, 1), Space(0, 2)]],
+	        color: _globals.COLORS.PURPLE
+	    },
+	    S: {
+	        orientations: [[Space(0, 0), Space(0, 1), Space(1, 1), Space(1, 2)], [Space(1, 0), Space(2, 0), Space(0, 1), Space(1, 1)], [Space(0, 0), Space(0, 1), Space(1, 1), Space(1, 2)], [Space(1, 0), Space(2, 0), Space(0, 1), Space(1, 1)]],
+	        color: _globals.COLORS.TURQUOISE
+	    },
+	    I: {
+	        orientations: [[Space(0, 0), Space(1, 0), Space(2, 0), Space(3, 0)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(1, 3)], [Space(0, 0), Space(1, 0), Space(2, 0), Space(3, 0)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(1, 3)]],
+	        color: _globals.COLORS.BLUE
+	    }
+	};
 
 	var Piece = function () {
 	    function Piece(shape, orientation, layout, color) {
@@ -96,19 +113,19 @@
 	    }
 
 	    _createClass(Piece, [{
-	        key: "shifted",
+	        key: 'shifted',
 	        value: function shifted(dx, dy) {
 	            return new Piece(this.shape, this.orientation, this.layout, this.color, this.x + dx, this.y + dy);
 	        }
 	    }, {
-	        key: "rotated",
+	        key: 'rotated',
 	        value: function rotated(dx, dy) {
 	            var newOrientation = (this.orientation + 1) % 4;
 	            var newLayout = SHAPES[this.shape].orientations[newOrientation];
 	            return new Piece(this.shape, newOrientation, newLayout, this.color, this.x, this.y);
 	        }
 	    }, {
-	        key: "spaces",
+	        key: 'spaces',
 	        get: function get() {
 	            var _this = this;
 
@@ -120,37 +137,6 @@
 
 	    return Piece;
 	}();
-
-	var SHAPES = {
-	    O: {
-	        orientations: [[Space(0, 0), Space(0, 1), Space(1, 0), Space(1, 1)], [Space(0, 0), Space(0, 1), Space(1, 0), Space(1, 1)], [Space(0, 0), Space(0, 1), Space(1, 0), Space(1, 1)], [Space(0, 0), Space(0, 1), Space(1, 0), Space(1, 1)]],
-	        color: COLORS.RED
-	    },
-	    J: {
-	        orientations: [[Space(0, 0), Space(1, 0), Space(2, 0), Space(2, 1)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(0, 2)], [Space(0, 0), Space(0, 1), Space(1, 1), Space(2, 1)], [Space(0, 0), Space(1, 0), Space(0, 1), Space(0, 2)]],
-	        color: COLORS.ORANGE
-	    },
-	    L: {
-	        orientations: [[Space(0, 0), Space(1, 0), Space(2, 0), Space(0, 1)], [Space(0, 0), Space(1, 0), Space(1, 1), Space(1, 2)], [Space(2, 0), Space(0, 1), Space(1, 1), Space(2, 1)], [Space(0, 0), Space(0, 1), Space(0, 2), Space(1, 2)]],
-	        color: COLORS.GREEN
-	    },
-	    T: {
-	        orientations: [[Space(0, 0), Space(0, 1), Space(0, 2), Space(1, 1)], [Space(0, 0), Space(1, 0), Space(2, 0), Space(1, 1)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(0, 1)], [Space(1, 0), Space(0, 1), Space(1, 1), Space(2, 1)]],
-	        color: COLORS.YELLOW
-	    },
-	    Z: {
-	        orientations: [[Space(0, 0), Space(1, 0), Space(1, 1), Space(2, 1)], [Space(1, 0), Space(0, 1), Space(1, 1), Space(0, 2)], [Space(0, 0), Space(1, 0), Space(1, 1), Space(2, 1)], [Space(1, 0), Space(0, 1), Space(1, 1), Space(0, 2)]],
-	        color: COLORS.PURPLE
-	    },
-	    S: {
-	        orientations: [[Space(0, 0), Space(0, 1), Space(1, 1), Space(1, 2)], [Space(1, 0), Space(2, 0), Space(0, 1), Space(1, 1)], [Space(0, 0), Space(0, 1), Space(1, 1), Space(1, 2)], [Space(1, 0), Space(2, 0), Space(0, 1), Space(1, 1)]],
-	        color: COLORS.TURQUOISE
-	    },
-	    I: {
-	        orientations: [[Space(0, 0), Space(1, 0), Space(2, 0), Space(3, 0)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(1, 3)], [Space(0, 0), Space(1, 0), Space(2, 0), Space(3, 0)], [Space(1, 0), Space(1, 1), Space(1, 2), Space(1, 3)]],
-	        color: COLORS.BLUE
-	    }
-	};
 
 	function makeInitialState() {
 	    return {
@@ -182,7 +168,7 @@
 	        var collision = board.find(colliding(space));
 	        if (collision) return true;
 	        // check for floor collision
-	        if (space.y >= GRID.HEIGHT) return true;
+	        if (space.y >= _globals.GRID.HEIGHT) return true;
 	    }
 	    return false;
 	}
@@ -195,7 +181,7 @@
 	}
 
 	function validPiece(piece, board) {
-	    return inXBounds(piece, GRID.WIDTH) && !colliding(piece, board);
+	    return inXBounds(piece, _globals.GRID.WIDTH) && !colliding(piece, board);
 	}
 
 	function shiftPiece(piece, board, dx, dy) {
@@ -225,14 +211,14 @@
 
 	    var rowscleared = 0;
 	    for (var row in rowcounts) {
-	        if (rowcounts[row] >= GRID.WIDTH) {
+	        if (rowcounts[row] >= _globals.GRID.WIDTH) {
 	            board = board.filter(notInRow(row));
 	            board = board.map(bumpSpaceDown(row));
 	            rowscleared += 1;
 	        }
 	    }
 
-	    var points = rowscleared <= 4 ? POINT_VALUES[rowscleared] : POINT_VALUES[4];
+	    var points = rowscleared <= 4 ? _globals.POINT_VALUES[rowscleared] : _globals.POINT_VALUES[4];
 
 	    return {
 	        board: board,
@@ -313,8 +299,8 @@
 	var store = (0, _redux.createStore)(mainState);
 
 	var canvas = document.getElementById("myCanvas");
-	canvas.width = GRID.DIMENSION * GRID.WIDTH;
-	canvas.height = GRID.DIMENSION * GRID.HEIGHT;
+	canvas.width = _globals.GRID.DIMENSION * _globals.GRID.WIDTH;
+	canvas.height = _globals.GRID.DIMENSION * _globals.GRID.HEIGHT;
 	var ctx = canvas.getContext("2d");
 
 	document.addEventListener("keydown", keyDownHandler, false);
@@ -333,57 +319,7 @@
 	    }
 	}
 
-	function drawSpace(context, space) {
-	    var dim = GRID.DIMENSION;
-	    context.beginPath();
-	    context.rect(space.x * dim, space.y * dim, dim, dim);
-	    context.fillStyle = space.color;
-	    context.fill();
-	    context.closePath();
-	}
-	function drawPiece(context, shape) {
-	    var spaces = shape.spaces.map(function (space) {
-	        return drawSpace(context, space);
-	    });
-	}
-
-	function drawRunningScore(context, score) {
-	    ctx.font = "30px Arial";
-	    context.fillStyle = "#777";
-	    context.fillText(score, 10, 30);
-	}
-
-	function drawStartMessage(context, score) {
-	    ctx.font = "20px Arial";
-	    context.fillStyle = "#777";
-	    context.fillText("Press Space to Start", 60, 275);
-	}
-
-	function drawGameOver(context, score) {
-	    ctx.font = "30px Arial";
-	    context.fillStyle = "#777";
-	    context.fillText("GAME OVER", 60, 275);
-	}
-
-	function drawState(context, state) {
-	    state.board.map(function (space) {
-	        return drawSpace(context, space);
-	    });
-	    drawPiece(context, state.current);
-
-	    if (!state.started) {
-	        drawStartMessage(context, state);
-	    } else if (state.gameOver) {
-	        drawGameOver(context, state);
-	    } else {
-	        drawRunningScore(context, state.score);
-	    }
-	}
-	function draw() {
-	    ctx.clearRect(0, 0, canvas.width, canvas.height);
-	    drawState(ctx, store.getState());
-	}
-	store.subscribe(draw);
+	store.subscribe(_draw.draw.bind(null, canvas, ctx, store));
 	setInterval(function () {
 	    return store.dispatch({ type: 'TICK' });
 	}, 1000);
@@ -1356,6 +1292,103 @@
 	    if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
 	  }
 	}
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.draw = draw;
+
+	var _globals = __webpack_require__(16);
+
+	function drawSpace(context, space) {
+	    var dim = _globals.GRID.DIMENSION;
+	    context.beginPath();
+	    context.rect(space.x * dim, space.y * dim, dim, dim);
+	    context.fillStyle = space.color;
+	    context.fill();
+	    context.closePath();
+	}
+
+	function drawPiece(context, shape) {
+	    var spaces = shape.spaces.map(function (space) {
+	        return drawSpace(context, space);
+	    });
+	}
+
+	function drawRunningScore(context, score) {
+	    context.font = "30px Arial";
+	    context.fillStyle = "#777";
+	    context.fillText(score, 10, 30);
+	}
+
+	function drawStartMessage(context, score) {
+	    context.font = "20px Arial";
+	    context.fillStyle = "#777";
+	    context.fillText("Press Space to Start", 60, 275);
+	}
+
+	function drawGameOver(context, score) {
+	    context.font = "30px Arial";
+	    context.fillStyle = "#777";
+	    context.fillText("GAME OVER", 60, 275);
+	}
+
+	function drawState(context, state) {
+	    state.board.map(function (space) {
+	        return drawSpace(context, space);
+	    });
+	    drawPiece(context, state.current);
+
+	    if (!state.started) {
+	        drawStartMessage(context, state);
+	    } else if (state.gameOver) {
+	        drawGameOver(context, state);
+	    } else {
+	        drawRunningScore(context, state.score);
+	    }
+	}
+
+	function draw(canvas, context, store) {
+	    context.clearRect(0, 0, canvas.width, canvas.height);
+	    drawState(context, store.getState());
+	}
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var GRID = {
+	    DIMENSION: 30,
+	    WIDTH: 10,
+	    HEIGHT: 20
+	};
+
+	var COLORS = {
+	    RED: "#e74c3c",
+	    ORANGE: "#e67e22",
+	    GREEN: "#2ecc71",
+	    BLUE: "#3498db",
+	    PURPLE: "#9b59b6",
+	    TURQUOISE: "#1abc9c",
+	    YELLOW: "#f1c40f"
+	};
+
+	var POINT_VALUES = [0, 40, 100, 300, 1200];
+
+	exports.GRID = GRID;
+	exports.COLORS = COLORS;
+	exports.POINT_VALUES = POINT_VALUES;
 
 /***/ }
 /******/ ]);

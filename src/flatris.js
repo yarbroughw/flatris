@@ -1,22 +1,6 @@
 import { createStore } from 'redux';
-
-const GRID = {
-    DIMENSION: 30,
-    WIDTH:     10,
-    HEIGHT:    20
-};
-
-const COLORS = {
-    RED:       "#e74c3c",
-    ORANGE:    "#e67e22",
-    GREEN:     "#2ecc71",
-    BLUE:      "#3498db",
-    PURPLE:    "#9b59b6",
-    TURQUOISE: "#1abc9c",
-    YELLOW:    "#f1c40f",
-};
-
-const POINT_VALUES = [0, 40, 100, 300, 1200];
+import { draw } from './draw.js';
+import { GRID, COLORS, POINT_VALUES } from './globals.js';
 
 function Space(x, y, color = COLORS.BLUE) {
     return {
@@ -24,33 +8,6 @@ function Space(x, y, color = COLORS.BLUE) {
         y: y,
         color: color
     };
-}
-
-class Piece {
-    constructor (shape, orientation, layout, color, x = 0, y = 0) {
-        this.shape = shape;
-        this.orientation = orientation;
-        this.x = x;
-        this.y = y;
-        this.layout = layout;
-        this.color = color;
-    }
-
-    get spaces() {
-        return this.layout.map(
-            space => Space(space.x + this.x, space.y + this.y, this.color)
-        );
-    }
-
-    shifted(dx, dy) {
-        return new Piece(this.shape, this.orientation, this.layout, this.color, this.x + dx, this.y + dy);
-    }
-
-    rotated(dx, dy) {
-        let newOrientation = (this.orientation + 1) % 4;
-        let newLayout = SHAPES[this.shape].orientations[newOrientation];
-        return new Piece(this.shape, newOrientation, newLayout, this.color, this.x, this.y);
-    }
 }
 
 const SHAPES = {
@@ -118,6 +75,33 @@ const SHAPES = {
         color: COLORS.BLUE
     },
 };
+
+class Piece {
+    constructor (shape, orientation, layout, color, x = 0, y = 0) {
+        this.shape = shape;
+        this.orientation = orientation;
+        this.x = x;
+        this.y = y;
+        this.layout = layout;
+        this.color = color;
+    }
+
+    get spaces() {
+        return this.layout.map(
+            space => Space(space.x + this.x, space.y + this.y, this.color)
+        );
+    }
+
+    shifted(dx, dy) {
+        return new Piece(this.shape, this.orientation, this.layout, this.color, this.x + dx, this.y + dy);
+    }
+
+    rotated(dx, dy) {
+        let newOrientation = (this.orientation + 1) % 4;
+        let newLayout = SHAPES[this.shape].orientations[newOrientation];
+        return new Piece(this.shape, newOrientation, newLayout, this.color, this.x, this.y);
+    }
+}
 
 function makeInitialState() {
     return {
@@ -287,53 +271,7 @@ function keyDownHandler(event) {
     }
 }
 
-function drawSpace(context, space) {
-    let dim = GRID.DIMENSION;
-    context.beginPath();
-    context.rect(space.x*dim, space.y*dim, dim, dim);
-    context.fillStyle = space.color;
-    context.fill();
-    context.closePath();
-}
-function drawPiece(context, shape) {
-     let spaces = shape.spaces.map(space => drawSpace(context, space));
-}
-
-function drawRunningScore(context, score) {
-    ctx.font = "30px Arial";
-    context.fillStyle = "#777";
-    context.fillText(score, 10, 30);
-}
-
-function drawStartMessage(context, score) {
-    ctx.font = "20px Arial";
-    context.fillStyle = "#777";
-    context.fillText("Press Space to Start", 60, 275);
-}
-
-function drawGameOver(context, score) {
-    ctx.font = "30px Arial";
-    context.fillStyle = "#777";
-    context.fillText("GAME OVER", 60, 275);
-}
-
-function drawState(context, state) {
-    state.board.map(space => drawSpace(context, space));
-    drawPiece(context, state.current);
-
-    if (!state.started) {
-        drawStartMessage(context, state);
-    }
-    else if (state.gameOver) {
-        drawGameOver(context, state);
-    }
-    else {
-        drawRunningScore(context, state.score);
-    }
-}
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawState(ctx, store.getState());
-}
-store.subscribe(draw);
+store.subscribe(
+    draw.bind(null, canvas, ctx, store)
+);
 setInterval(() => store.dispatch({type: 'TICK'}), 1000);
