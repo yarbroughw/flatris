@@ -216,7 +216,14 @@ function validRotation(piece, board) {
 function mainState(state = makeInitialState(), action) {
     switch (action.type) {
         case 'NEW_GAME':
-            return Object.assign({}, state, {started: true, gameOver: false});
+            return Object.assign({}, state,
+                {
+                    started: true,
+                    gameOver: false,
+                    board: [],
+                    score: 0
+                }
+            );
         case 'TICK':
             if (state.gameOver || !state.started) return state;
 
